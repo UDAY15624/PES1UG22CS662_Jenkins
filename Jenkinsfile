@@ -1,36 +1,36 @@
 pipeline {
     agent any
     stages {
-        stage('Clone repository') {
-            steps {
-                checkout([$class: 'GitSCM',
-                          branches: [[name: '*/main']],
-                          userRemoteConfigs: [[url: 'https://github.com/UDAY15624/CC_TA.git']]])
-            } // <- This was missing!  VERY IMPORTANT.
-        } // <- and this one
-
         stage('Build') {
             steps {
-                sh 'g++ -o PES1UG22CS662-1 main.cpp' // Compiles C++ file
+                script {
+                    sh '''
+                    g++ main/hello.cpp -o main/hello_exec
+                    '''
+                }
             }
         }
-
         stage('Test') {
             steps {
-                sh './PES1UG22CS662-1' // Runs the compiled file
+                script {
+                    sh '''
+                    ./main/hello_exec
+                    '''
+                }
             }
         }
-
         stage('Deploy') {
             steps {
-                echo "Deploying the application..."
+                echo "Deployment successful!"
             }
         }
     }
-
     post {
+        success {
+            echo 'Pipeline succeeded!'
+        }
         failure {
-            echo 'Pipeline failed' // Post action in case of failure
+            echo 'Pipeline failed!'
         }
     }
 }
